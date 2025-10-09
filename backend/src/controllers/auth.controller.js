@@ -1,11 +1,10 @@
 
 import { sendWelcomeEmail } from "../emails/emailHandlers.js";
-import { ENV } from "../lib/env.js";
+
 import { generateToken } from "../lib/utils.js";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
-
-import {ENV} from "../lib/env.js";
+import { ENV } from "../lib/env.js";
 
 export const signup = async (req, res) =>
 {
@@ -68,4 +67,47 @@ export const signup = async (req, res) =>
         console.log("Error in signup controller:", error);
         res.status(500).json({ message : "Internal server error" })
     }
-}
+};
+
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // sanitize email
+    const validEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
+
+    // find user
+    const user = await User.findOne({ email: validEmail });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // compare passwords
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // generate token and send response
+    generateToken(user._id, res);
+
+    res.status(200).json({
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      profilePic: user.profilePic,
+    });
+
+  } catch (error) {
+    console.error("Error in login controller:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+export const logout = (_, res) =>{
+    res.cookie("jwt","", {maxAge : 0});
+    res.status(200).json({message : "Logged Out Successfully"});
+};
+
+// export const updateProfile = async(req,res)=>{};
