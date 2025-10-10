@@ -1,7 +1,7 @@
 // const express = require("express");
 import express from "express";
 
-
+import cookieParser from "cookie-parser";
 import path from "path";
 
 import messageRoutes from "./routes/message.route.js";
@@ -21,7 +21,7 @@ const PORT = ENV.PORT || 3000;
 
 app.use(express.json());
 //req.body
-
+app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 
