@@ -1,11 +1,12 @@
+import cloudinary from "../lib/cloudinary.js";
+//import { getReceiverSocketId, io } from "../lib/socket.js";
 import Message from "../models/Message.js";
 import User from "../models/User.js";
-import cloudinary from "../lib/cloudinary.js";
+
 export const getAllContacts = async (req, res) => {
   try {
     const loggedInUserId = req.user._id;
     const filteredUsers = await User.find({ _id: { $ne: loggedInUserId } }).select("-password");
-    // here loggedinuserid will get all the users except current loggedin user from the contacts of current user
 
     res.status(200).json(filteredUsers);
   } catch (error) {
@@ -13,6 +14,7 @@ export const getAllContacts = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 export const getMessagesByUserId = async (req, res) => {
   try {
     const myId = req.user._id;
