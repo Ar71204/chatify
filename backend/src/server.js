@@ -7,7 +7,7 @@ import path from "path";
 import messageRoutes from "./routes/message.route.js";
 import authRoutes from "./routes/auth.route.js";
 import { connectDB } from "./lib/db.js";
-
+import cors from "cors";
 import { ENV } from "./lib/env.js";
 // for to calll the port from . env file
 //otherwise it will give u undefined behaviour
@@ -21,6 +21,7 @@ const PORT = ENV.PORT || 3000;
 
 app.use(express.json());
 //req.body
+app.use(cors({origin:ENV.CLIENT_URL, credentials:true}));
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
